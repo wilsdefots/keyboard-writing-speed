@@ -1,6 +1,6 @@
 #On importe les données----
 library(readxl)
-clavier <- read_excel("labo_fichier.xlsx")
+clavier <- read_excel("collecte.xlsx")
 clavier$Sexe<-as.factor(clavier$Sexe)
 head(clavier)
 summary(clavier)
