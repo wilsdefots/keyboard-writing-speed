@@ -1,0 +1,83 @@
+#On importe les données----
+library(readxl)
+clavier <- read_excel("labo_fichier.xlsx")
+clavier$Sexe<-as.factor(clavier$Sexe)
+head(clavier)
+summary(clavier)
+#clavier$Region<-as.factor(clavier$Region)
+#moyenne globale
+mean(clavier$Temps)
+sd(clavier$Temps)
+#(clavier)
+Homme<-clavier[clavier$Sexe=="Homme",]
+mean(Homme$Temps)
+sd(Homme$Temps)
+Femme<-clavier[clavier$Sexe=="Femme",]
+mean(Femme$Temps)
+sd(Femme$Temps)
+table(clavier$Sexe,clavier$Profession)
+##Visualisation des données--------------
+couleurs=c("pink","blue")
+#par(mfrow = c(1, 2))
+boxplot(Temps~Sexe,data = clavier,col= couleurs,
+        main="Temps en fonction du sexe")
+
+boxplot(Temps~Profession, data = clavier,main="Temps en fonction de la profession")
+
+#On teste l'homoscédasticité----------
+residu.Homme<-Homme$Temps-mean(Homme$Temps)
+residu.Femme <-Femme$Temps-mean(Femme$Temps)
+residu.clavier<-c(residu.Femme,residu.Homme)
+boxplot(residu.clavier~Sexe, data = clavier, col=couleurs, main ="Boxplot")
+#On teste la normalité
+qqnorm(residu.clavier)
+qqline(residu.clavier,col = "blue")
+#Les résidus ne suivent pas la normale, on va faire les transformations
+##Transformation logarithmique--------
+
+clavier$Temps.log<- log(clavier$Temps)
+Homme<-clavier[clavier$Sexe=="Homme",]
+Femme<-clavier[clavier$Sexe=="Femme",]
+residu.Homme.log<-Homme$Temps.log-mean(Homme$Temps.log)
+residu.Femme.log<-Femme$Temps.log-mean(Femme$Temps.log)
+residu.clavier.log<-c(residu.Femme.log,residu.Homme.log)
+#On teste à nouveau l'homoscédasticité et la normalité des résidus
+par(mfrow = c(1, 2))
+qqnorm(residu.clavier.log)
+qqline(residu.clavier.log,col="blue")
+boxplot(residu.clavier.log~Sexe, data = clavier, col=couleurs, main ="Boxplot")
+#dev.off()
+
+shapiro.test(residu.clavier.log)
+
+
+par(mfrow = c(1, 2))
+qqnorm(residu.clavier.log)
+qqline(residu.clavier.log,col="blue")
+boxplot(residu.clavier.log~Sexe, data = clavier, col=couleurs, main ="Boxplot")
+dev.off()
+
+
+
+testons <-t.test(x=Femme$Temps.log,y=Homme$Temps.log)
+testons
+
+t.test(x=Femme$Temps.log,y=Femme$Temps.log)
+
+#boxplot(Temps~Sexe+Profession, data = clavier)
+
+#Hommelabo<-labo[labo$Sexe=="Homme",]
+#mean(Hommelabo$Temps)
+Femmelabo<-labo[labo$Sexe=="Femme",]
+#mean(Femmelabo$Temps)
+#t.test(x=Femmelabo$Temps,y= Hommelabo$Temps)
+
+
+
+#poids <- c(0.2, -0.5, -1.3, -1.6, -0.7, 0.4,
+#          -0.1, 0.0, -0.6, -1.1, -1.2, -0.8)
+#residu.poids<-poids-mean(poids)
+#residu.poids
+#library(nortest)
+#ad.test(residu.poids)
+
